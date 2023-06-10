@@ -9,7 +9,7 @@ https://docs.google.com/document/d/1WaA1OELSLM-qMRXWWqvPtKlnLOlDdkSyhY1-rwbjPpQ/
 Unity 2022.3.1f1 LTS<br />
 https://unity.com/releases/lts
 
-CodeBuster Studios<br />
+CodeBusters Studio<br />
 Copyright © 2023<br />
 All rights reserved
 
