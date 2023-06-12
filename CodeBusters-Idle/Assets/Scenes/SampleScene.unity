@@ -475,6 +475,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 977f1971b44b09a4d8c25e7936b906e9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  eggCount: 0
 --- !u!1 &927531976
 GameObject:
   m_ObjectHideFlags: 0
@@ -510,8 +511,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 217.4}
-  m_SizeDelta: {x: 200, y: 50}
+  m_AnchoredPosition: {x: 0, y: 222.6}
+  m_SizeDelta: {x: 344.9927, y: 45.1669}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &927531978
 MonoBehaviour:
@@ -742,6 +743,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b96a40f16c6cf3d4cae97b0bb87e5b48, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ChickenOverlord: {fileID: 754652033}
+  EggCountText: {fileID: 927531976}
+  eggCount: 0
 --- !u!4 &1759307757
 Transform:
   m_ObjectHideFlags: 0
