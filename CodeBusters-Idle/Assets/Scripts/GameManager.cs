@@ -20,16 +20,10 @@ public class GameManager : MonoBehaviour
         EggCountText.GetComponent<TextMeshProUGUI>().text = "Egg Count: " + eggCount.ToString();
     }
 
-
     void Start()
     {
         eggCount = 0;
         EggCountText.GetComponent<TextMeshProUGUI>().text = "Egg Count: " + eggCount.ToString();
 
-    }
-
-    void Update()
-    {
-        
     }
 }

@@ -4,21 +4,7 @@ using UnityEngine;
 
 public class ChickenOverlord : MonoBehaviour
 {
-
-    
-
     public int eggCount = 0;
-
-
-    void Start()
-    {
-        
-    }
-
-    void Update()
-    {
-        
-    }
 
     void OnMouseDown()
     {
