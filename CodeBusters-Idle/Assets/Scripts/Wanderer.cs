@@ -5,6 +5,7 @@ using UnityEngine;
 public class Wanderer : MonoBehaviour
 {
     internal Transform thisTransform;
+    private float x;
 
     // The movement speed of the object
     public float moveSpeed = 0.2f;
@@ -19,45 +20,48 @@ public class Wanderer : MonoBehaviour
     private Transform myTransform;
     private Rigidbody2D myRigidbody2D;
     public Collider2D bounds;
+
   
 
-    // Use this for initialization
-    void Start()
-    {
-        // Cache the transform for quicker access
-        thisTransform = this.transform;
-
-        // Set a random time delay for taking a decision ( changing direction, or standing in place for a while )
-        decisionTimeCount = Random.Range(decisionTime.x, decisionTime.y);
-        myTransform = GetComponent<Transform>();
-        myRigidbody2D = GetComponent<Rigidbody2D>();
-        // Choose a movement direction, or stay in place
-        ChooseMoveDirection();
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        // Move the object in the chosen direction at the set speed
-        thisTransform.position += moveDirections[currentMoveDirection] * Time.deltaTime * moveSpeed;
-
-        if (decisionTimeCount > 0) decisionTimeCount -= Time.deltaTime;
-        else
+        // Use this for initialization
+        void Start()
         {
-            // Choose a random time delay for taking a decision ( changing direction, or standing in place for a while )
-            decisionTimeCount = Random.Range(decisionTime.x, decisionTime.y);
+            // Cache the transform for quicker access
+            thisTransform = this.transform;
 
+            // Set a random time delay for taking a decision ( changing direction, or standing in place for a while )
+            decisionTimeCount = Random.Range(decisionTime.x, decisionTime.y);
+            myTransform = GetComponent<Transform>();
+            myRigidbody2D = GetComponent<Rigidbody2D>();
             // Choose a movement direction, or stay in place
             ChooseMoveDirection();
         }
 
-     
-    }
 
 
-    void ChooseMoveDirection()
-    {
-        // Choose whether to move sideways or up/down
-        currentMoveDirection = Mathf.FloorToInt(Random.Range(0, moveDirections.Length));
-    }
+        // Update is called once per frame
+        void Update()
+        {
+            // Move the object in the chosen direction at the set speed
+            thisTransform.position += moveDirections[currentMoveDirection] * Time.deltaTime * moveSpeed;
+
+            if (decisionTimeCount > 0) decisionTimeCount -= Time.deltaTime;
+            else
+            {
+                // Choose a random time delay for taking a decision ( changing direction, or standing in place for a while )
+                decisionTimeCount = Random.Range(decisionTime.x, decisionTime.y);
+
+                // Choose a movement direction, or stay in place
+                ChooseMoveDirection();
+            }
+        }
+
+        void ChooseMoveDirection()
+        {
+            // Choose whether to move sideways or up/down
+            currentMoveDirection = Mathf.FloorToInt(Random.Range(0, moveDirections.Length));
+        }
+    
 }
+
+    
