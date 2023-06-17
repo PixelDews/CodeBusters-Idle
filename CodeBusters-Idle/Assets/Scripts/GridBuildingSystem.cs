@@ -3,11 +3,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class GridBuildingSystem : MonoBehaviour
 {
+    [SerializeField]
+    private List<FactoryObject> factoryObjectList;
+    private FactoryObject factoryObject;
 
     private GridXY<GridObject> grid;
-
+    private GameUtilities utils = new GameUtilities();
 
     private void Awake()
     {
@@ -15,6 +19,9 @@ public class GridBuildingSystem : MonoBehaviour
         int gridHeight = 16;
         float cellSize = 5f;
         grid = new GridXY<GridObject>(gridWidth, gridHeight, cellSize, Vector3.zero, (GridXY<GridObject> g, int x, int y) => new GridObject(g, x, y));
+
+
+        factoryObject = factoryObjectList[0];
     }
 
     public class GridObject
@@ -22,6 +29,7 @@ public class GridBuildingSystem : MonoBehaviour
         private GridXY<GridObject> grid;
         private int x;
         private int y;
+        private Transform transform;
 
         public GridObject(GridXY<GridObject> grid, int x, int y)
         {
@@ -29,5 +37,59 @@ public class GridBuildingSystem : MonoBehaviour
             this.x = x;
             this.y = y;
         }
+
+        public void SetTransform(Transform transform)
+        {
+            this.transform = transform;
+            grid.TriggerGridObjectChanged(x, y);
+        }
+
+        public void ClearTransform()
+        {
+            transform = null;
+            grid.TriggerGridObjectChanged(x, y);
+
+        }
+
+        public bool CanBuild()
+        {
+            return transform == null;
+        }
+
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Alpha1)) { factoryObject = factoryObjectList[0]; }
+        if (Input.GetKeyDown(KeyCode.Alpha2)) { factoryObject = factoryObjectList[1]; }
+        if (Input.GetKeyDown(KeyCode.Alpha3)) { factoryObject = factoryObjectList[2]; }
+        if (Input.GetKeyDown(KeyCode.Alpha4)) { factoryObject = factoryObjectList[3]; }
+        if (Input.GetKeyDown(KeyCode.Alpha5)) { factoryObject = factoryObjectList[4]; }
+        if (Input.GetKeyDown(KeyCode.Alpha6)) { factoryObject = factoryObjectList[5]; }
+        if (Input.GetKeyDown(KeyCode.Alpha7)) { factoryObject = factoryObjectList[6]; }
+        if (Input.GetKeyDown(KeyCode.Alpha8)) { factoryObject = factoryObjectList[7]; }
+
+
+
+        if (Input.GetMouseButtonDown(0))
+        {
+            grid.GetXY(utils.GetMouseWorldPosition(), out int x, out int y);
+
+            GridObject gridObject = grid.GetGridObject(x, y);
+
+            if (gridObject.CanBuild())
+            {
+                Transform builtTransform = Instantiate(factoryObject.prefab, grid.GetWorldPosition(x, y), Quaternion.identity);
+                gridObject.SetTransform(builtTransform);
+                Debug.Log(grid.GetWorldPosition(x, y));
+            } else
+            {
+                Debug.Log("Cannot Build!");
+            }
+        }
+
     }
 }
+
+
+   
