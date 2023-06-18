@@ -67,13 +67,11 @@ public class GridXY<TGridObject>
         }
     }
 
-
     public void GetXY(Vector3 worldPosition, out int x, out int y)
     {
         x = Mathf.FloorToInt((worldPosition - originPosition).x / cellSize);
         y = Mathf.FloorToInt((worldPosition - originPosition).y / cellSize);
     }
-
 
     public void SetGridObject(int x, int y, TGridObject value)
     {
@@ -88,8 +86,6 @@ public class GridXY<TGridObject>
     {
         if (OnGridObjectChanged != null) OnGridObjectChanged(this, new OnGridObjectChangedEventArgs { x = x, y = y });
     }
-
-
 
     public void SetGridObject(Vector3 worldPosition, TGridObject value)
     {
