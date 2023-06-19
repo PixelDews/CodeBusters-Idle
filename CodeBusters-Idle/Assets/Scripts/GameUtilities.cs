@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class GameUtilities
 {
-    public Vector3 GetMouseWorldPosition()
+
+    public static Vector3 GetMouseWorldPosition()
     {
         Vector3 mousePos = Input.mousePosition;
         Vector3 worldPos = Camera.main.ScreenToWorldPoint(mousePos);

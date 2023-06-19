@@ -18,4 +18,9 @@ public class ObjectPlaced : MonoBehaviour
 
     private FactoryObject factoryObject;
 
+
+    public void DestroySelf()
+    {
+        Destroy(gameObject);
+    }
 }

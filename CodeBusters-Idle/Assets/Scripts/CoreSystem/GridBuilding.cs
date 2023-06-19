@@ -5,8 +5,6 @@ using UnityEngine;
 
 public class GridBuilding : MonoBehaviour
 {
-    private GameUtilities utils = new GameUtilities();
-
     [SerializeField]
     private List<FactoryObject> factoryObjectList;
     private FactoryObject factoryObject;
@@ -16,14 +14,15 @@ public class GridBuilding : MonoBehaviour
     public static int gridHeight = 16;
     public static float cellSize = 5f;
 
-
     public class GridObject
     {
+        public ObjectPlaced objectPlaced; //BUILT OBJECT
+        public ObjectPlaced[,] objectPlacedArray;
+
         private GridXY<GridObject> grid;
         private int x;
         private int y;
 
-        private ObjectPlaced objectPlaced; //BUILT OBJECT
 
         public GridObject(GridXY<GridObject> grid, int x, int y)
         {
@@ -35,6 +34,7 @@ public class GridBuilding : MonoBehaviour
         public void SetObjectPlaced(ObjectPlaced objectPlaced)
         {
             this.objectPlaced = objectPlaced;
+            grid.TriggerGridObjectChanged(x, y);
         }
 
         public ObjectPlaced GetObjectPlaced()
@@ -42,11 +42,11 @@ public class GridBuilding : MonoBehaviour
             return objectPlaced;
         }
 
-        //public void ClearTransform()
-        //{
-        //transform = null;
-        //grid.TriggerGridObjectChanged(x, y);
-        //}
+        public void ClearObjectPlaced()
+        {
+            objectPlaced = null;
+            grid.TriggerGridObjectChanged(x, y);
+        }
 
         public bool CanBuild()
         {
@@ -55,9 +55,9 @@ public class GridBuilding : MonoBehaviour
 
     }
 
-    public List<ObjectPlaced> GetRowObjectPlacedList(int y)
+    public ObjectPlaced[,] GetRowObjectPlacedArray(int y)
     {
-        List<ObjectPlaced> rowObjectPlacedList = new List<ObjectPlaced>();
+        ObjectPlaced[,] rowObjectPlacedArray = new ObjectPlaced[gridWidth, gridHeight];
 
         int x;
 
@@ -67,11 +67,10 @@ public class GridBuilding : MonoBehaviour
             {
                 GridObject gridObject = grid.GetGridObject(x, y);
                 ObjectPlaced objectPlaced = gridObject.GetObjectPlaced();
-                rowObjectPlacedList.Add(objectPlaced);
 
-                Debug.Log(rowObjectPlacedList[x]);
+                rowObjectPlacedArray[x, y] = objectPlaced;
             }
-            return rowObjectPlacedList;
+            return rowObjectPlacedArray;
         }
         else
         {
@@ -98,17 +97,17 @@ public class GridBuilding : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Alpha6)) { factoryObject = factoryObjectList[5]; }
         if (Input.GetKeyDown(KeyCode.Alpha7)) { factoryObject = factoryObjectList[6]; }
         if (Input.GetKeyDown(KeyCode.Alpha8)) { factoryObject = factoryObjectList[7]; }
+        if (Input.GetKeyDown(KeyCode.Alpha9)) { factoryObject = factoryObjectList[8]; }
 
         if (Input.GetMouseButtonDown(0))
         {
-            grid.GetXY(utils.GetMouseWorldPosition(), out int x, out int y);
-
+            grid.GetXY(GameUtilities.GetMouseWorldPosition(), out int x, out int y);
             GridObject gridObject = grid.GetGridObject(x, y);
 
             if (gridObject.CanBuild())
             {
                 ObjectPlaced objectPlaced = ObjectPlaced.Create(factoryObject, grid.GetWorldPosition(x, y));
-                objectPlaced.name = objectPlaced.name.Replace("(clone)", "").Trim();
+                objectPlaced.name = objectPlaced.name.Replace("(Clone)", "").Trim();
                 gridObject.SetObjectPlaced(objectPlaced);
             } else
             {
@@ -118,9 +117,22 @@ public class GridBuilding : MonoBehaviour
 
         if (Input.GetMouseButtonDown(1))
         {
-            grid.GetXY(utils.GetMouseWorldPosition(), out int x, out int y);
-            Debug.Log(GetRowObjectPlacedList(y));
+            grid.GetXY(GameUtilities.GetMouseWorldPosition(), out int x, out int y);
+            GridObject gridObject = grid.GetGridObject(x, y);
+            ObjectPlaced objectPlaced = gridObject.GetObjectPlaced();
 
+            if (objectPlaced != null)
+            {
+                gridObject.ClearObjectPlaced();
+                objectPlaced.DestroySelf();
+            }
+        }
+
+        if (Input.GetMouseButtonDown(2))
+        {
+            grid.GetXY(GameUtilities.GetMouseWorldPosition(), out int x, out int y);
+            GridObject gridObject = grid.GetGridObject(x, y);
+            GetRowObjectPlacedArray(y);
         }
     }
 }
