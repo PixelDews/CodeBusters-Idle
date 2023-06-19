@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 
 public class GridBuildingSystem : MonoBehaviour
@@ -12,6 +13,16 @@ public class GridBuildingSystem : MonoBehaviour
 
     private GridXY<GridObject> grid;
     private GameUtilities utils = new GameUtilities();
+
+    public int gold;
+    public TextMeshProUGUI goldDisplay;
+
+    public GridBuildingSystem buildingToPlace;
+
+
+    public CustomCursor customCursor;
+
+
 
     private void Awake()
     {
@@ -67,27 +78,46 @@ public class GridBuildingSystem : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Alpha5)) { factoryObject = factoryObjectList[4]; }
         if (Input.GetKeyDown(KeyCode.Alpha6)) { factoryObject = factoryObjectList[5]; }
         if (Input.GetKeyDown(KeyCode.Alpha7)) { factoryObject = factoryObjectList[6]; }
-        if (Input.GetKeyDown(KeyCode.Alpha8)) { factoryObject = factoryObjectList[7]; }
-
-
-
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetKeyDown(KeyCode.Alpha8))
         {
-            grid.GetXY(utils.GetMouseWorldPosition(), out int x, out int y);
+            factoryObject = factoryObjectList[7];
 
-            GridObject gridObject = grid.GetGridObject(x, y);
 
-            if (gridObject.CanBuild())
+            if (Input.GetMouseButtonDown(0))
             {
-                Transform builtTransform = Instantiate(factoryObject.prefab, grid.GetWorldPosition(x, y), Quaternion.identity);
-                gridObject.SetTransform(builtTransform);
-                Debug.Log(grid.GetWorldPosition(x, y));
-            } else
-            {
-                Debug.Log("Cannot Build!");
+                grid.GetXY(utils.GetMouseWorldPosition(), out int x, out int y);
+
+                GridObject gridObject = grid.GetGridObject(x, y);
+
+                if (gridObject.CanBuild())
+                {
+                    Transform builtTransform = Instantiate(factoryObject.prefab, grid.GetWorldPosition(x, y), Quaternion.identity);
+                    gridObject.SetTransform(builtTransform);
+                    Debug.Log(grid.GetWorldPosition(x, y));
+                }
+                else
+                {
+                    Debug.Log("Cannot Build!");
+                }
             }
+
         }
 
+        goldDisplay.text = gold.ToString();
+    }
+
+    public void BuyBuilding(GridBuildingSystem building)
+    {
+        if (gold >= building.cost)
+        {
+            customCursor.gameObject.SetActive(true);
+            customCursor.GetComponent<SpriteRenderer>().sprite = building.GetComponent<SpriteRenderer>().sprite;
+            Cursor.visible = false;
+
+            gold -= building.cost;
+            buildingToPlace = building;
+            grid.SetActive(true);
+        }
     }
 }
 
