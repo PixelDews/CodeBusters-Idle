@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 
 
@@ -106,7 +107,7 @@ public class GridBuildingSystem : MonoBehaviour
         goldDisplay.text = gold.ToString();
     }
 
-    public void BuyBuilding(GridBuildingSystem building)
+    public void BuyBuilding(Building building)
     {
         if (gold >= building.cost)
         {
@@ -116,7 +117,7 @@ public class GridBuildingSystem : MonoBehaviour
 
             gold -= building.cost;
             buildingToPlace = building;
-            grid.SetActive(true);
+            GridObject.SetActive(true);
         }
     }
 }
