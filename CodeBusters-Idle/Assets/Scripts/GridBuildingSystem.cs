@@ -5,7 +5,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-
 public class GridBuildingSystem : MonoBehaviour
 {
     [SerializeField]
@@ -18,11 +17,13 @@ public class GridBuildingSystem : MonoBehaviour
     public int gold;
     public TextMeshProUGUI goldDisplay;
 
-    public GridBuildingSystem buildingToPlace;
-
-
     public CustomCursor customCursor;
-
+    private Building buildingToPlace;
+    [System.Serializable]
+    public class FactoryObject
+    {
+        public Building buildingPrefab;
+    }
 
 
     private void Awake()
@@ -32,95 +33,101 @@ public class GridBuildingSystem : MonoBehaviour
         float cellSize = 5f;
         grid = new GridXY<GridObject>(gridWidth, gridHeight, cellSize, Vector3.zero, (GridXY<GridObject> g, int x, int y) => new GridObject(g, x, y));
 
-
         factoryObject = factoryObjectList[0];
     }
 
-    public class GridObject
+    private int mouseClickCount = 0;
+
+    public void BuyBuilding(Building selectedBuilding) // Renamed the parameter to selectedBuilding
     {
-        private GridXY<GridObject> grid;
-        private int x;
-        private int y;
-        private Transform transform;
-
-        public GridObject(GridXY<GridObject> grid, int x, int y)
+        if (Input.GetMouseButtonDown(0))
         {
-            this.grid = grid;
-            this.x = x;
-            this.y = y;
-        }
+            mouseClickCount++;
 
-        public void SetTransform(Transform transform)
-        {
-            this.transform = transform;
-            grid.TriggerGridObjectChanged(x, y);
-        }
+            grid.GetXY(utils.GetMouseWorldPosition(), out int x, out int y);
 
-        public void ClearTransform()
-        {
-            transform = null;
-            grid.TriggerGridObjectChanged(x, y);
+            GridObject gridObject = grid.GetGridObject(x, y);
 
-        }
-
-        public bool CanBuild()
-        {
-            return transform == null;
-        }
-
-    }
-
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Alpha1)) { factoryObject = factoryObjectList[0]; }
-        if (Input.GetKeyDown(KeyCode.Alpha2)) { factoryObject = factoryObjectList[1]; }
-        if (Input.GetKeyDown(KeyCode.Alpha3)) { factoryObject = factoryObjectList[2]; }
-        if (Input.GetKeyDown(KeyCode.Alpha4)) { factoryObject = factoryObjectList[3]; }
-        if (Input.GetKeyDown(KeyCode.Alpha5)) { factoryObject = factoryObjectList[4]; }
-        if (Input.GetKeyDown(KeyCode.Alpha6)) { factoryObject = factoryObjectList[5]; }
-        if (Input.GetKeyDown(KeyCode.Alpha7)) { factoryObject = factoryObjectList[6]; }
-        if (Input.GetKeyDown(KeyCode.Alpha8))
-        {
-            factoryObject = factoryObjectList[7];
-
-
-            if (Input.GetMouseButtonDown(0))
+            if (gridObject.CanBuild())
             {
-                grid.GetXY(utils.GetMouseWorldPosition(), out int x, out int y);
+                // Calculate the index based on the number of mouse clicks
+                int index = mouseClickCount - 1;
 
-                GridObject gridObject = grid.GetGridObject(x, y);
-
-                if (gridObject.CanBuild())
+                // Check if the index is within the range of factoryObjectList
+                if (index >= 0 && index < factoryObjectList.Count)
                 {
-                    Transform builtTransform = Instantiate(factoryObject.prefab, grid.GetWorldPosition(x, y), Quaternion.identity);
-                    gridObject.SetTransform(builtTransform);
-                    Debug.Log(grid.GetWorldPosition(x, y));
+                    factoryObject = factoryObjectList[index];
+                    Building building = factoryObject.buildingPrefab;
+
+                    if (gold >= selectedBuilding.cost) // Use selectedBuilding here
+                    {
+                        customCursor.gameObject.SetActive(true);
+                        customCursor.GetComponent<SpriteRenderer>().sprite = selectedBuilding.GetComponent<SpriteRenderer>().sprite;
+                        Cursor.visible = false;
+                        Transform builtTransform = Instantiate(selectedBuilding.prefab.transform, grid.GetWorldPosition(x, y), Quaternion.identity);
+                        gridObject.SetTransform(builtTransform);
+                        gold -= selectedBuilding.cost;
+                        goldDisplay.text = gold.ToString();
+                    }
+                    else
+                    {
+                        Debug.Log("Cannot Build! Not enough gold.");
+                    }
                 }
                 else
                 {
-                    Debug.Log("Cannot Build!");
+                    Debug.Log("Invalid factoryObject index.");
                 }
             }
-
+            else
+            {
+                Debug.Log("Cannot Build! Grid position is occupied.");
+            }
         }
-
-        goldDisplay.text = gold.ToString();
     }
 
-    public void BuyBuilding(Building building)
-    {
-        if (gold >= building.cost)
-        {
-            customCursor.gameObject.SetActive(true);
-            customCursor.GetComponent<SpriteRenderer>().sprite = building.GetComponent<SpriteRenderer>().sprite;
-            Cursor.visible = false;
 
-            gold -= building.cost;
-            buildingToPlace = building;
-            GridObject.SetActive(true);
-        }
+
+
+
+
+
+}
+
+
+public class GridObject
+{
+    private GridXY<GridObject> grid;
+    private int x;
+    private int y;
+    private Transform transform;
+
+    public GridObject(GridXY<GridObject> grid, int x, int y)
+    {
+        this.grid = grid;
+        this.x = x;
+        this.y = y;
+    }
+
+    public void SetTransform(Transform transform)
+    {
+        this.transform = transform;
+        grid.TriggerGridObjectChanged(x, y);
+    }
+
+    public void ClearTransform()
+    {
+        transform = null;
+        grid.TriggerGridObjectChanged(x, y);
+    }
+
+    public bool CanBuild()
+    {
+        return transform == null;
     }
 }
 
 
-   
+
+
+
